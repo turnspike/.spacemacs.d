@@ -10,21 +10,31 @@ values."
    '(
      auto-completion
      better-defaults
-     colors
+     colors ; show color codes as actual colors
+     dash ; access dash docco with <SPC d d>
      emacs-lisp
+     ; evil-commentary
      git
      github
      helm
+     html
+     javascript
      markdown
-     org
+     (org :variables
+          org-enable-github-support t)
      osx
+     ranger
+     ruby
+     ruby-on-rails
      spacemacs-layouts
      (shell :variables
             shell-default-height 30
-            shell-default-position 'bottom)
+            shell-default-position 'bottom
+            shell-default-shell 'ansi-term)
      spell-checking
      syntax-checking
      version-control
+     yaml
      )
    ;; dotspacemacs-additional-packages '() ;; list of additional packages, can also put the configuration in `dotspacemacs/user-config'
    ;; dotspacemacs-frozen-packages '() ;; list of packages that cannot be updated
