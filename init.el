@@ -113,8 +113,12 @@ you should place your code here."
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line) ; make horizontal movement cross lines
   (setq-default evil-cross-lines t)
 
+  ;; TODO I think the manual is wrong about the above...
+  ;; http://spacemacs.org/doc/VIMUSERS.html
+  ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
+
   ;; TODO  set magit to hardwrap commit msgs at 72c
-  ;;      https://github.com/magit/magit/issues/3068
-  ;;      https://emacs.stackexchange.com/questions/32603/turn-on-auto-fill-mode-when-editing-a-commit-message-with-magit/32610
+  ;; https://github.com/magit/magit/issues/3068
+  ;; https://emacs.stackexchange.com/questions/32603/turn-on-auto-fill-mode-when-editing-a-commit-message-with-magit/32610
 
   )
