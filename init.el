@@ -9,8 +9,11 @@
    '(
      auto-completion
      better-defaults
-     colors ; show color codes as actual colors
-     dash ; access dash docco with <SPC d d>
+     (colors :variables
+             colors-colorize-identifiers 'variables
+             colors-enable-nyan-cat-progress-bar t
+             ) ;; show color codes as actual colors
+     dash ;; access dash docco with <SPC d d>
      emacs-lisp
      evil-commentary
      git
@@ -18,13 +21,19 @@
      helm
      html
      javascript
+     ;;jekyll
      markdown
      (org :variables
           org-enable-github-support t
           org-projectile-file "TODOs.org")
+     ;;orgwiki
      osx
      ranger
-     ruby
+     (ruby :variables
+           ruby-enable-ruby-on-rails-support t
+           ruby-enable-enh-ruby-mode t
+           ruby-version-manager 'chruby
+           ruby-test-runner 'rspec)
      ruby-on-rails
      spacemacs-layouts
      (shell :variables
@@ -38,7 +47,7 @@
      )
    ;; dotspacemacs-additional-packages '() ;; list of additional packages, can also put the configuration in `dotspacemacs/user-config'
    ;; dotspacemacs-frozen-packages '() ;; list of packages that cannot be updated
-   ;; dotspacemacs-excluded-packages '() ;; list of packages that will not be installed and loaded
+   dotspacemacs-excluded-packages '(vi-tilde-fringe) ;; list of packages that will not be installed and loaded
    ))
 
 (defun dotspacemacs/init ()
@@ -70,7 +79,7 @@
    ;;dotspacemacs-fullscreen-at-startup nil ;; If non nil the frame is fullscreen when Emacs starts up. (default nil) ;; (Emacs 24.4+ only)
    ;;dotspacemacs-major-mode-leader-key "," ;; Major mode leader key is a shortcut key which is the equivalent of pressing `<leader> m`. Set it to `nil` to disable it. (default ",")
    ;;dotspacemacs-verbose-loading nil ;; if non nil output loading progress in `*Messages*' buffer, default nil
-   ;;dotspacemacs-whitespace-cleanup "all"
+   dotspacemacs-whitespace-cleanup "changed"
    ))
 
 (defun dotspacemacs/user-init ()
@@ -84,7 +93,10 @@
 
   (setq exec-path-from-shell-check-startup-files nil) ;; don't warn about .bashrc env vars
   (setq custom-file "~/.config/spacemacs/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
-)
+
+  (setq projectile-switch-project-action 'neotree-projectile-action)
+
+  )
 
 (defun dotspacemacs/user-config ()
   "Configuration function for user code. This function is called at the very end of Spacemacs initialization after layers configuration. This is the place where most of your configurations should be done. Unless it is explicitly specified that a variable should be set before a package is loaded, you should place your code here."
@@ -95,14 +107,35 @@
   (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
-  (setq-default evil-cross-lines t) ; make horizontal movement cross lines
+  (setq-default evil-cross-lines t) ;; enable horizontal movement wrapping
+
+  ;; -- don't use macos system clipboard
+  ;; paste from Safari using "+p
+  ;; https://stackoverflow.com/questions/26472216/how-to-copy-text-in-emacs-evil-mode-without-overwriting-the-clipboard
+  ;; https://github.com/syl20bnr/spacemacs/issues/2032
+  ;; https://github.com/syl20bnr/spacemacs/issues/5750
+  ;; https://github.com/syl20bnr/spacemacs/pull/9344
+  (setq save-interprogram-paste-before-kill t)
+  (setq x-select-enable-clipboard nil)
+  (fset 'evil-visual-update-x-selection 'ignore)
+  ;; (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
+  ;; (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
+  ;; (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
+  ;; (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
+
+  (add-hook 'prog-mode-hook 'rainbow-mode) ;; enable rainbow mode by default
+
+  (setq nyan-animate-nyancat nil) ;; don't animate nyancat progress bar
 
   ;; TODO I think the manual is wrong about the above...
   ;; http://spacemacs.org/doc/VIMUSERS.html
   ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
 
-  ;; TODO  set magit to hardwrap commit msgs at 72c
+  ;; TODO set magit to hardwrap commit msgs at 72c
   ;; https://github.com/magit/magit/issues/3068
   ;; https://emacs.stackexchange.com/questions/32603/turn-on-auto-fill-mode-when-editing-a-commit-message-with-magit/32610
+
+  ;; TODO add minimap layer
+  ;; https://github.com/lahorichargha/emacs-minimap/blob/master/minimap.el
 
   )
