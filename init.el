@@ -174,6 +174,12 @@
    neo-theme 'ascii
    )
 
+  ;; -- display the buffer name in the window title bar
+  (setq frame-title-format
+        '((:eval (if (buffer-file-name)
+                     (abbreviate-file-name (buffer-file-name))
+                   "%b"))))
+
   ;; TODO set magit to hardwrap commit msgs at 72c
   ;; https://github.com/magit/magit/issues/3068
   ;; https://emacs.stackexchange.com/questions/32603/turn-on-auto-fill-mode-when-editing-a-commit-message-with-magit/32610
