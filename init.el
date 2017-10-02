@@ -140,6 +140,8 @@
   ;; (setq save-interprogram-paste-before-kill t)
 
   (setq x-select-enable-clipboard nil)
+  ;; -- fix copy/paste from other apps
+  ;; https://emacs.stackexchange.com/questions/14940/emacs-doesnt-paste-in-evils-visual-mode-with-every-os-clipboard/15054#15054
   (fset 'evil-visual-update-x-selection 'ignore)
   (setq evil-kill-on-visual-paste nil)
   (setq save-interprogram-paste-before-kill t)
