@@ -8,6 +8,7 @@
    dotspacemacs-configuration-layers ;; List of configuration layers to load
    '(
      auto-completion
+   '(auto-completion
      ;; (auto-completion :variables
      ;;                  auto-completion-return-key-behavior nil
      ;;                  auto-completion-tab-key-behavior 'cycle
@@ -26,6 +27,7 @@
      evil-commentary
      git
      github
+     gtags
      helm
      html
      imenu-list ;; show function drawer with <SPC b i>
@@ -37,6 +39,7 @@
           org-projectile-file "TODOs.org")
      ;;orgwiki
      osx
+     php
      ranger
      (ruby :variables
            ruby-enable-ruby-on-rails-support t
