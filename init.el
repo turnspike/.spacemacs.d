@@ -8,6 +8,14 @@
    dotspacemacs-configuration-layers ;; List of configuration layers to load
    '(
      auto-completion
+     ;; (auto-completion :variables
+     ;;                  auto-completion-return-key-behavior nil
+     ;;                  auto-completion-tab-key-behavior 'cycle
+     ;;                  auto-completion-complete-with-key-sequence "jk"
+     ;;                  auto-completion-complete-with-key-sequence-delay 0.1
+     ;;                  auto-completion-enable-snippets-in-popup t
+     ;;                  auto-completion-enable-help-tooltip nil
+     ;;                  auto-completion-enable-sort-by-usage t)
      better-defaults
      (colors :variables
              colors-colorize-identifiers 'variables
@@ -103,6 +111,8 @@
 (defun dotspacemacs/user-config ()
   "Configuration function for user code. This function is called at the very end of Spacemacs initialization after layers configuration. This is the place where most of your configurations should be done. Unless it is explicitly specified that a variable should be set before a package is loaded, you should place your code here."
 
+  ;; (spacemacs/set-leader-keys "oc" 'org-capture)
+
   ;; -- move through softwrapped lines naturally
   ;;    https://stackoverflow.com/a/20899418/269247
   (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
@@ -111,27 +121,51 @@
   (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
   (setq-default evil-cross-lines t) ;; enable horizontal movement wrapping
 
-  ;; -- don't use macos system clipboard
-  ;; paste from Safari using "+p
+  ;; TODO I think the manual is wrong about the above...
+  ;; http://spacemacs.org/doc/VIMUSERS.html
+  ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
+  ;; https://github.com/syl20bnr/spacemacs/wiki/Beginner's-Guide-to-Contributing-a-Pull-Request-to-Spacemacs
+
+  ;; -- don't use macos system clipboard for vim yanks
+  ;; paste from eg Safari using "+p or s-v
   ;; https://stackoverflow.com/questions/26472216/how-to-copy-text-in-emacs-evil-mode-without-overwriting-the-clipboard
   ;; https://github.com/syl20bnr/spacemacs/issues/2032
   ;; https://github.com/syl20bnr/spacemacs/issues/5750
   ;; https://github.com/syl20bnr/spacemacs/pull/9344
-  (setq save-interprogram-paste-before-kill t)
+  ;; (setq save-interprogram-paste-before-kill t)
+
   (setq x-select-enable-clipboard nil)
   (fset 'evil-visual-update-x-selection 'ignore)
-  ;; (define-key evil-visual-state-map (kbd "s-c") (kbd "\"+y"))
-  ;; (define-key evil-insert-state-map  (kbd "s-v") (kbd "+"))
-  ;; (define-key evil-ex-completion-map (kbd "s-v") (kbd "+"))
-  ;; (define-key evil-ex-search-keymap  (kbd "s-v") (kbd "+"))
+  (setq evil-kill-on-visual-paste nil)
+  (setq save-interprogram-paste-before-kill t)
+
+  (defun pbcopy ()
+    (interactive)
+    (call-process-region (point) (mark) "pbcopy")
+    (setq deactivate-mark t))
+
+  (defun pbpaste ()
+    (interactive)
+    (call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
+
+  (defun pbcut ()
+    (interactive)
+    (pbcopy)
+    (delete-region (region-beginning) (region-end)))
+
+  (global-set-key (kbd "s-c") 'pbcopy)
+  (global-set-key (kbd "s-v") 'pbpaste)
+  (global-set-key (kbd "s-x") 'pbcut)
 
   (add-hook 'prog-mode-hook 'rainbow-mode) ;; enable rainbow mode by default
 
   (setq nyan-animate-nyancat nil) ;; don't animate nyancat progress bar
 
-  ;; TODO I think the manual is wrong about the above...
-  ;; http://spacemacs.org/doc/VIMUSERS.html
-  ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
+  ;; -- customize neotree
+  (setq
+   neo-banner-message nil
+   neo-theme 'ascii
+   )
 
   ;; TODO set magit to hardwrap commit msgs at 72c
   ;; https://github.com/magit/magit/issues/3068
@@ -139,5 +173,8 @@
 
   ;; TODO add minimap layer
   ;; https://github.com/lahorichargha/emacs-minimap/blob/master/minimap.el
+
+  ;; TODO fix defaults not getting set in core
+  ;; eg dotspacemacs-emacs-command-key "SPC" throws an error if removed, should default to "SPC"
 
   )
