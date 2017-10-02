@@ -6,8 +6,6 @@
   (setq-default
    ;;dotspacemacs-configuration-layer-path '("~/.config/spacemacs/layers") ;; also looks in ~/.emacs.d/private
    dotspacemacs-configuration-layers ;; List of configuration layers to load
-   '(
-     auto-completion
    '(auto-completion
      ;; (auto-completion :variables
      ;;                  auto-completion-return-key-behavior nil
@@ -51,7 +49,6 @@
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom
-            shell-default-shell 'ansi-term)
             shell-default-shell 'ansi-term
             shell-default-term-shell "/bin/bash")
      spell-checking
@@ -131,38 +128,9 @@
   ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
   ;; https://github.com/syl20bnr/spacemacs/wiki/Beginner's-Guide-to-Contributing-a-Pull-Request-to-Spacemacs
 
-  ;; -- don't use macos system clipboard for vim yanks
-  ;; paste from eg Safari using "+p or s-v
-  ;; https://stackoverflow.com/questions/26472216/how-to-copy-text-in-emacs-evil-mode-without-overwriting-the-clipboard
-  ;; https://github.com/syl20bnr/spacemacs/issues/2032
-  ;; https://github.com/syl20bnr/spacemacs/issues/5750
-  ;; https://github.com/syl20bnr/spacemacs/pull/9344
-  ;; (setq save-interprogram-paste-before-kill t)
-
-  (setq x-select-enable-clipboard nil)
   ;; -- fix copy/paste from other apps
   ;; https://emacs.stackexchange.com/questions/14940/emacs-doesnt-paste-in-evils-visual-mode-with-every-os-clipboard/15054#15054
   (fset 'evil-visual-update-x-selection 'ignore)
-  (setq evil-kill-on-visual-paste nil)
-  (setq save-interprogram-paste-before-kill t)
-
-  (defun pbcopy ()
-    (interactive)
-    (call-process-region (point) (mark) "pbcopy")
-    (setq deactivate-mark t))
-
-  (defun pbpaste ()
-    (interactive)
-    (call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
-
-  (defun pbcut ()
-    (interactive)
-    (pbcopy)
-    (delete-region (region-beginning) (region-end)))
-
-  (global-set-key (kbd "s-c") 'pbcopy)
-  (global-set-key (kbd "s-v") 'pbpaste)
-  (global-set-key (kbd "s-x") 'pbcut)
 
   (add-hook 'prog-mode-hook 'rainbow-mode) ;; enable rainbow mode by default
 
