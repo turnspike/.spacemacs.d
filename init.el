@@ -158,4 +158,6 @@
   ;; TODO fix defaults not getting set in core
   ;; eg dotspacemacs-emacs-command-key "SPC" throws an error if removed, should default to "SPC"
 
+  ;; TODO add :delmarks! function to core
+  ;; TODO port vim-peekaboo <spc-r-r>
   )
