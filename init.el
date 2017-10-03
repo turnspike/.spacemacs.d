@@ -40,12 +40,13 @@
      php
      ranger
      (ruby :variables
-           ruby-enable-ruby-on-rails-support t
-           ruby-enable-enh-ruby-mode t
-           ruby-version-manager 'chruby
-           ruby-test-runner 'rspec)
+             ruby-enable-ruby-on-rails-support t
+             ruby-enable-enh-ruby-mode t
+             ruby-version-manager 'chruby
+             ruby-test-runner 'rspec)
      ruby-on-rails
      spacemacs-layouts
+     ;; (spacemacs-spaceline :location local)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom
@@ -56,8 +57,8 @@
      version-control
      yaml
      )
-   ;; dotspacemacs-additional-packages '() ;; list of additional packages, can also put the configuration in `dotspacemacs/user-config'
-   ;; dotspacemacs-frozen-packages '() ;; list of packages that cannot be updated
+   dotspacemacs-additional-packages '(all-the-icons mode-icons) ;; list of additional packages, can also put the configuration in `dotspacemacs/user-config'
+   ;; dotspacemacs-frozen-packages '();; list of packages that cannot be updated
    dotspacemacs-excluded-packages '(vi-tilde-fringe) ;; list of packages that will not be installed and loaded
    ))
 
@@ -81,7 +82,7 @@
    dotspacemacs-large-file-size 1 ;; Size (in MB) above which spacemacs will prompt to open the large file literally to avoid performance issues (no major or minor modes)
    dotspacemacs-leader-key "SPC" ;; the leader key
    dotspacemacs-line-numbers nil ;; Control line numbers activation. ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and ;; `text-mode' derivatives. If set to `relative', line numbers are relative. ;; (default nil)
-   dotspacemacs-maximized-at-startup t ;; If non nil the frame is maximized when Emacs starts up. ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil. ;; (default nil) (Emacs 24.4+ only)
+   dotspacemacs-maximized-at-startup t ;; If non nil the frame is maximized when Emacs starts up. ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil. ;; ((default nil)) (Emacs 24.4+ only)
    dotspacemacs-search-tools '("ag" "pt" "ack" "grep") ;; (default '("ag" "pt" "ack" "grep"))
    dotspacemacs-startup-lists '((recents . 5) (projects . 7)) ;; possible values for list-type are:; `recents' `bookmarks' `projects' `agenda' `todos'."
    dotspacemacs-themes '(spacemacs-light spacemacs-dark) ;; list of themes, the first of the list is loaded when spacemacs starts. <SPC> T n to cycle to the next theme in the list (works great with 2 themes variants, one dark and one light)
@@ -105,6 +106,7 @@
   (setq exec-path-from-shell-check-startup-files nil) ;; don't warn about .bashrc env vars
   (setq custom-file "~/.config/spacemacs/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
 
+  (setq neo-mode-line-type 'none)
   (setq projectile-switch-project-action 'neotree-projectile-action)
 
   )
@@ -133,13 +135,35 @@
   (fset 'evil-visual-update-x-selection 'ignore)
 
   (add-hook 'prog-mode-hook 'rainbow-mode) ;; enable rainbow mode by default
-
   (setq nyan-animate-nyancat nil) ;; don't animate nyancat progress bar
+  ;; (setq spacemacs-centered-buffer-mode t)
+
+  ;; ;; customize documents
+  ;; (setq spacemacs-space-doc-modificators
+  ;;       '(center-buffer-mode
+  ;;         org-kbd-face-remap
+  ;;         resize-inline-images))
 
   ;; -- customize neotree
   (setq
    neo-banner-message nil
    neo-theme 'ascii
+   ;; neo-theme 'icons
+   neo-mode-line-type 'none
+   neo-force-change-root t
+   )
+
+  ;; --  force hide neotree modeline
+  ;; https://github.com/anmonteiro/dotfiles/blob/master/.emacs.d/customizations/setup-neotree.el
+  (add-hook 'neotree-mode-hook
+            (lambda ()
+              (setq-local mode-line-format nil)
+              (setq-local display-line-numbers nil)))
+
+  ;; -- customize imenu
+  (setq
+   imenu-list-mode-line-format nil
+   imenu-list-focus-after-activation nil
    )
 
   ;; -- display the buffer name in the window title bar
@@ -148,7 +172,20 @@
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
 
+  ;; -- display major mode with an icon
+  ;; https://github.com/syl20bnr/spacemacs/issues/5632
+  ;; (remove-hook 'helm-mode-hook 'mode-icons-mode)
+  ;; (remove-hook 'helm-minibuffer-set-up-hook 'mode-icons-mode)
+  (setq mode-icons-change-mode-name nil) ;; don't use icons in helm as it breaks alignment
+  (spacemacs|do-after-display-system-init (mode-icons-mode)) ;; enable mode-icons-mode on startup
+
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
   ;; TODO set magit to hardwrap commit msgs at 72c
+  ;; git-commit-setup-hook
+  ;; https://magit.vc/manual/magit/Editing-commit-messages.html
+  ;; (add-hook 'text-mode-hook 'enable-hard-wrap)
+  ;; (add-hook 'prog-mode-hook 'enable-comment-hard-wrap)
   ;; https://github.com/magit/magit/issues/3068
   ;; https://emacs.stackexchange.com/questions/32603/turn-on-auto-fill-mode-when-editing-a-commit-message-with-magit/32610
 
@@ -160,4 +197,5 @@
 
   ;; TODO add :delmarks! function to core
   ;; TODO port vim-peekaboo <spc-r-r>
+
   )
