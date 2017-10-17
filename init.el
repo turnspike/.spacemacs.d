@@ -23,6 +23,7 @@
      dash ;; access dash docco with <SPC d d>
      emacs-lisp
      ;; evil-commentary
+     fasd
      git
      github
      gtags
@@ -54,6 +55,7 @@
             shell-default-term-shell "/bin/bash")
      spell-checking
      syntax-checking
+     treemacs
      version-control
      yaml
      )
@@ -69,7 +71,7 @@
    dotspacemacs-active-transparency 90 ;; A value from the range (0..100)
    dotspacemacs-auto-resume-layouts nil ;; If non nil then the last auto saved layouts are resume automatically upon start. (default nil)
    dotspacemacs-check-for-update t ;; running on develop branch so check for updates frequently
-   dotspacemacs-default-font '("Source Code Pro" :size 14 :weight normal :width normal :powerline-scale 1.1) ;; default font, or prioritized list of fonts. `powerline-scale' allows to quickly tweak the mode-line size to make separators look not too crappy.
+   dotspacemacs-default-font '("Anonymice Powerline" :size 16 :weight normal :width normal :powerline-scale 1.3) ;; default font, or prioritized list of fonts. `powerline-scale' allows to quickly tweak the mode-line size to make separators look not too crappy.
    dotspacemacs-default-layout-name "default" ;; Name of the default layout (default "Default")
    ;; dotspacemacs-display-default-layout t ;; If non nil the default layout name is displayed in the mode-line. (default nil)
    dotspacemacs-editing-style 'vim ;; one of `vim', `emacs' or `hybrid', default 'vim
@@ -137,12 +139,30 @@
   ;; https://emacs.stackexchange.com/questions/14940/emacs-doesnt-paste-in-evils-visual-mode-with-every-os-clipboard/15054#15054
   (fset 'evil-visual-update-x-selection 'ignore)
 
-  ;; -- delete into the black hole register instead of the killring
-  ;; helps when copying from and external app then pasting into smacs
-  ;; https://github.com/syl20bnr/spacemacs/issues/6977
-  (defun bb/evil-delete (orig-fn beg end &optional type _ &rest args)
-    (apply orig-fn beg end type ?_ args))
-  (advice-add 'evil-delete :around 'bb/evil-delete)
+  ;; ;; -- delete into the black hole register instead of the killring
+  ;; ;; helps when copying from and external app then pasting into smacs
+  ;; ;; https://github.com/syl20bnr/spacemacs/issues/6977
+  ;; (defun bb/evil-delete (orig-fn beg end &optional type _ &rest args)
+  ;;   (apply orig-fn beg end type ?_ args))
+  ;; (advice-add 'evil-delete :around 'bb/evil-delete)
+
+  ;; FIXME this doesn't work
+  ;; -- select most recently pasted text
+  (defun evil-select-pasted ()
+    "Visually select last pasted text."
+    (interactive)
+    (let ((start-marker (evil-get-marker ?[))
+                        (end-marker (evil-get-marker ?])))
+      (evil-visual-select start-marker end-marker))
+
+    ;; (interactive)
+    ;; (evil-goto-mark ?[)
+    ;;                 (evil-visual-char)
+    ;;                 (evil-goto-mark ?])
+
+    )
+
+  (define-key evil-normal-state-map "gv" 'evil-select-pasted)
 
   ;; -- indenting
   (setq standard-indent 2)
@@ -152,7 +172,7 @@
   ;; (setq spacemacs-centered-buffer-mode-max-content-width 1600)
   ;; -- configure programming modes
   (add-hook 'prog-mode-hook (lambda()
-                              (setq c-basic-offset 2)
+                              (setq c-basic-offset 2) ;; tab is two spaces
                               (modify-syntax-entry ?_ "w") ;; snake_case
                               (modify-syntax-entry ?- "w") ;; kebab-case
                               (modify-syntax-entry ?$ "w") ;; $variable
@@ -161,26 +181,47 @@
                               ;; (spacemacs/toggle-centered-buffer-mode)
                               ))
 
-  ;; -- autocomplete
+  ;; -- autocomplete FIXME
   (global-company-mode t)
   ;; (spacemacs|defvar-company-backends php-mode python-mode)
 
   ;; -- hilight current line in insert mode
   (setq evil-insert-state-message nil)
   (setq spaceline-highlight-face-func 'spaceline-highlight-face-default)
-  (global-hl-line-mode 1)
+  ;; (global-hl-line-mode 1)
   ;; (set-face-attribute hl-line-face nil :underline nil)
+  (set-face-background 'hl-line "#D9D8D2")
+  (set-face-attribute 'region nil :background "#FAC023")
+  ;; (setq evil-visual-state-cursor '("#cb4b16" box))     ; orange
+
   (add-hook 'evil-insert-state-entry-hook (lambda()
                                             ;;(set-face-attribute hl-line-face nil :underline t)
                                             (set-face-background 'hl-line "#C5EFD8")
                                             (set-face-background 'hl-line "#9CEFA9")
-                                            (message " ")))
+                                            ))
 
   (add-hook 'evil-insert-state-exit-hook (lambda()
                                            ;; (set-face-attribute hl-line-face nil :underline nil)
-                                           (set-face-background 'hl-line "#EFEAE9")))
+                                           (set-face-background 'hl-line "#D9D8D2")
+                                           ))
 
-  ;; hybrid-mode-insert-state-exit-hook
+  ;; -- escape always escapes
+  ;;  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+  ;;  (define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+  ;;  (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+  ;;  (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+  ;;  (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+
+  ;; -- smartparens smackdown
+
+  ;; (spacemacs/toggle-smartparens-globally-off)
+  ;; does not disable for {}
+  (eval-after-load 'smartparens
+    '(progn
+       (sp-pair "(" nil :actions :rem)
+       (sp-pair "[" nil :actions :rem)
+       (sp-pair "'" nil :actions :rem)
+       (sp-pair "\"" nil :actions :rem)))
 
   ;; -- nyanyanyan
   (setq nyan-animate-nyancat nil) ;; don't animate nyancat progress bar
@@ -235,17 +276,27 @@
   ;; (fringe-mode '(0 . 8)) ;; thicker window borders
 
   ;; -- ignore boring files
+  ;; FIXME this doesn't work
   (add-hook 'after-init-hook
             (lambda ()
-              (add-to-list 'recentf-exclude "\\TAGS\\'")
-              (add-to-list 'recentf-exclude "\\GPATH\\'")
-              (add-to-list 'recentf-exclude (expand-file-name "~/.emacs.d/.cache")) t))
+              (add-to-list recentf-exclude '("^/var/folders\\.*"
+                                             "COMMIT_EDITMSG\\'"
+                                             ".*-autoloads\\.el\\'"
+                                             "[/\\]\\.elpa/"
+                                             "^.*TAGS$"
+                                             "^.*GPATH$"
+                                             (expand-file-name "~/.emacs.d/.cache")
+                                             ))
+
+              ;; (add-to-list 'recentf-exclude "^.*TAGS$")
+
+              t))
 
   ;; ;; -- configure projectile
   ;; ;; use ripgrep
   ;; ;; https://emacs.stackexchange.com/a/29200/9069
 
-  ;; (setq projectile-enable-caching t)
+  (setq projectile-enable-caching t)
 
   ;; ;; set rg arguments
   ;; ;; https://github.com/BurntSushi/ripgrep
@@ -340,53 +391,3 @@
 
 
   )
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (auto-complete yaml-mode yafolding xterm-color ws-butler winum which-key web-mode web-beautify volatile-highlights uuidgen use-package unfill toc-org tagedit symon string-inflection spaceline smeargle slim-mode shell-pop scss-mode sass-mode rvm ruby-tools ruby-test-mode ruby-refactor rubocop rspec-mode robe reveal-in-osx-finder restart-emacs rbenv ranger rainbow-mode rainbow-identifiers rainbow-delimiters pug-mode projectile-rails popwin phpunit phpcbf php-extras php-auto-yasnippets persp-mode pbcopy password-generator paradox ox-gfm osx-trash osx-dictionary orgit org-projectile org-present org-pomodoro org-download org-bullets org-brain open-junk-file neotree mwim multi-term move-text mode-icons mmm-mode minitest markdown-toc magit-gitflow magit-gh-pulls macrostep lorem-ipsum livid-mode linum-relative link-hint launchctl json-mode js2-refactor js-doc info+ indent-guide impatient-mode hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-ag google-translate golden-ratio gnuplot github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags flyspell-correct-helm flycheck-pos-tip flx-ido fill-column-indicator feature-mode fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-escape evil-ediff evil-args evil-anzu eval-sexp-fu eshell-z eshell-prompt-extras esh-help enh-ruby-mode emmet-mode elisp-slime-nav editorconfig dumb-jump drupal-mode diff-hl dash-at-point column-enforce-mode color-identifiers-mode coffee-mode clean-aindent-mode chruby bundler browse-at-remote auto-highlight-symbol auto-dictionary auto-compile all-the-icons aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line)))
- '(tramp-syntax (quote default) nil (tramp)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-;;;### (autoloads nil nil ("../.emacs.d/elpa/ac-php-core-20171011.2355/ac-php-comm-tags-data.el"
-;;;;;;  "../.emacs.d/elpa/ac-php-core-20171011.2355/ac-php-core-autoloads.el"
-;;;;;;  "../.emacs.d/elpa/ac-php-core-20171011.2355/ac-php-core-pkg.el"
-;;;;;;  "../.emacs.d/elpa/ac-php-core-20171011.2355/ac-php-core.el"
-;;;;;;  "../.emacs.d/elpa/auto-complete-20170124.1845/auto-complete-autoloads.el"
-;;;;;;  "../.emacs.d/elpa/auto-complete-20170124.1845/auto-complete-config.el"
-;;;;;;  "../.emacs.d/elpa/auto-complete-20170124.1845/auto-complete-pkg.el"
-;;;;;;  "../.emacs.d/elpa/auto-complete-20170124.1845/auto-complete.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-abbrev.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-autoloads.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-bbdb.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-capf.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-clang.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-cmake.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-css.el" "../.emacs.d/elpa/company-20171006.1442/company-dabbrev-code.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-dabbrev.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-eclim.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-elisp.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-etags.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-files.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-gtags.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-ispell.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-keywords.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-nxml.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-oddmuse.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-pkg.el" "../.emacs.d/elpa/company-20171006.1442/company-semantic.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-template.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-tempo.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-tng.el" "../.emacs.d/elpa/company-20171006.1442/company-xcode.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company-yasnippet.el"
-;;;;;;  "../.emacs.d/elpa/company-20171006.1442/company.el") (0 0
-;;;;;;  0 0))
-
-;;;***
