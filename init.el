@@ -16,6 +16,7 @@
                       auto-completion-enable-help-tooltip nil
                       auto-completion-enable-sort-by-usage nil)
      better-defaults
+     clojure
      (colors :variables
              colors-colorize-identifiers 'variables
              colors-enable-nyan-cat-progress-bar t
@@ -27,15 +28,17 @@
      git
      github
      gtags
-     helm
+     ;; helm
      html
      imenu-list ;; show function drawer with <SPC b i>
+     ivy
      javascript
      ;;jekyll
      markdown
-     (org :variables
-          org-enable-github-support t
-          org-projectile-file "TODOs.org")
+     org
+     ;; (org :variables
+     ;;      org-enable-github-support t
+     ;;      org-projectile-file "TODOs.org")
      ;;orgwiki
      osx
      php
@@ -55,6 +58,7 @@
             shell-default-term-shell "/bin/bash")
      spell-checking
      syntax-checking
+     themes-megapack
      treemacs
      version-control
      yaml
@@ -85,6 +89,7 @@
    dotspacemacs-leader-key "SPC" ;; the leader key
    dotspacemacs-line-numbers nil ;; Control line numbers activation. ;; If set to `t' or `relative' line numbers are turned on in all `prog-mode' and ;; `text-mode' derivatives. If set to `relative', line numbers are relative. ;; (default nil)
    dotspacemacs-maximized-at-startup t ;; If non nil the frame is maximized when Emacs starts up. ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil. ;; ((default nil)) (Emacs 24.4+ only)
+   dotspacemacs-mode-line-theme '(all-the-icons :separator 'slant)
    dotspacemacs-persistent-server t ;; always keep spacemacs running
    dotspacemacs-search-tools '("rg" "ag" "pt" "ack" "grep") ;; (default '("ag" "pt" "ack" "grep"))
    dotspacemacs-startup-lists '((recents . 5) (projects . 7)) ;; possible values for list-type are:; `recents' `bookmarks' `projects' `agenda' `todos'."
@@ -107,10 +112,12 @@
   ;; (push '(helm . "melpa-stable") package-pinned-packages)
 
   (setq exec-path-from-shell-check-startup-files nil) ;; don't warn about .bashrc env vars
-  (setq custom-file "~/.config/spacemacs/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
+  (setq custom-file "~/.spacemacs.d/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
 
   (setq neo-mode-line-type 'none)
   (setq projectile-switch-project-action 'neotree-projectile-action)
+
+  ;; (spacemacs/toggle-display-time-off)
 
   )
 
@@ -139,6 +146,16 @@
   ;; https://emacs.stackexchange.com/questions/14940/emacs-doesnt-paste-in-evils-visual-mode-with-every-os-clipboard/15054#15054
   (fset 'evil-visual-update-x-selection 'ignore)
 
+  (define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
+  (define-key evil-motion-state-map (kbd "M-j") #'evil-window-down)
+  (define-key evil-motion-state-map (kbd "M-k") #'evil-window-up)
+  (define-key evil-motion-state-map (kbd "M-l") #'evil-window-right)
+
+  (define-key evil-motion-state-map (kbd "C-<left>") #'evil-window-left)
+  (define-key evil-motion-state-map (kbd "C-<down>") #'evil-window-down)
+  (define-key evil-motion-state-map (kbd "C-<up>") #'evil-window-up)
+  (define-key evil-motion-state-map (kbd "C-<right>") #'evil-window-right)
+
   ;; ;; -- delete into the black hole register instead of the killring
   ;; ;; helps when copying from and external app then pasting into smacs
   ;; ;; https://github.com/syl20bnr/spacemacs/issues/6977
@@ -148,21 +165,21 @@
 
   ;; FIXME this doesn't work
   ;; -- select most recently pasted text
-  (defun evil-select-pasted ()
-    "Visually select last pasted text."
-    (interactive)
-    (let ((start-marker (evil-get-marker ?[))
-                        (end-marker (evil-get-marker ?])))
-      (evil-visual-select start-marker end-marker))
+  ;; (defun evil-select-pasted ()
+  ;;   "Visually select last pasted text."
+  ;;   (interactive)
+  ;;   (let ((start-marker (evil-get-marker ?[))
+  ;;                       (end-marker (evil-get-marker ?])))
+  ;;     (evil-visual-select start-marker end-marker))
 
-    ;; (interactive)
-    ;; (evil-goto-mark ?[)
-    ;;                 (evil-visual-char)
-    ;;                 (evil-goto-mark ?])
+  ;;   ;; (interactive)
+  ;;   ;; (evil-goto-mark ?[)
+  ;;   ;;                 (evil-visual-char)
+  ;;   ;;                 (evil-goto-mark ?])
 
-    )
+  ;;   )
 
-  (define-key evil-normal-state-map "gv" 'evil-select-pasted)
+  ;; (define-key evil-normal-state-map "gv" 'evil-select-pasted)
 
   ;; -- indenting
   (setq standard-indent 2)
@@ -177,7 +194,7 @@
                               (modify-syntax-entry ?- "w") ;; kebab-case
                               (modify-syntax-entry ?$ "w") ;; $variable
                               (modify-syntax-entry ?@ "w") ;; @variable
-                              (rainbow-mode) ;; highlight matching brackets
+                              ;; (rainbow-mode) ;; highlight matching brackets
                               ;; (spacemacs/toggle-centered-buffer-mode)
                               ))
 
@@ -310,7 +327,7 @@
   ;;       "Default rg arguments used in the functions in `projectile' package.")
 
   ;;     (defun modi/advice-projectile-use-rg ()
-  ;;       "Always use `rg' for getting a list of all files in the project."
+  ;; 
   ;;       (mapconcat 'identity
   ;;                  (append '("\\rg") ; used unaliased version of `rg': \rg
   ;;                          modi/rg-arguments
@@ -324,7 +341,7 @@
   ;; https://github.com/syl20bnr/spacemacs/issues/5632
   ;; (remove-hook 'helm-mode-hook 'mode-icons-mode)
   ;; (remove-hook 'helm-minibuffer-set-up-hook 'mode-icons-mode)
-  (setq mode-icons-change-mode-name nil) ;; don't use icons in helm as it breaks alignment
+  ;; (setq mode-icons-change-mode-name nil) ;; don't use icons in helm as it breaks alignment
   (spacemacs|do-after-display-system-init (mode-icons-mode)) ;; enable mode-icons-mode on startup
 
   ;; -- jekyll
