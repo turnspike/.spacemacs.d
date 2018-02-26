@@ -52,24 +52,22 @@ values."
              ) ;; show color codes as actual colors
      ivy
      ;; auto-completion
-     ;; better-defaults
      emacs-lisp
      git
-     ;; imenu-list
+     imenu-list
      markdown
      org
      (ruby :variables
            ruby-enable-ruby-on-rails-support t
            ruby-enable-enh-ruby-mode t
            ruby-version-manager 'chruby
-           ruby-test-runner 'rspec)
+           ) ;;ruby-test-runner 'rspec)
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      spell-checking
      syntax-checking
      turnspike
-     ;; treemacs
      (treemacs :variables treemacs-use-follow-mode t)
      version-control
      yaml
@@ -414,7 +412,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (setq spaceline-highlight-face-func 'spaceline-highlight-face-default)
   ;; (global-hl-line-mode 1)
   ;; (set-face-attribute hl-line-face nil :underline nil)
-  (set-face-background 'hl-line "#D9D8D2")
+  ;; (set-face-background 'hl-line "#D9D8D2")
   (set-face-attribute 'region nil :background "#FAC023")
   ;; (setq evil-visual-state-cursor '("#cb4b16" box))     ; orange
 
@@ -438,14 +436,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;; -- smartparens smackdown
 
-  ;; (spacemacs/toggle-smartparens-globally-off)
-  ;; does not disable for {}
-  (eval-after-load 'smartparens
-    '(progn
-       (sp-pair "(" nil :actions :rem)
-       (sp-pair "[" nil :actions :rem)
-       (sp-pair "'" nil :actions :rem)
-       (sp-pair "\"" nil :actions :rem)))
+  ;; ;; (spacemacs/toggle-smartparens-globally-off)
+  ;; (eval-after-load 'smartparens
+  ;;   '(progn
+  ;;      (sp-pair "(" nil :actions '(:rem insert))
+  ;;      (sp-pair "[" nil :actions '(:rem insert))
+  ;;      (sp-pair "'" nil :actions '(:rem insert))
+  ;;      (sp-pair "\"" nil :actions '(:rem insert))
+  ;;      (sp-pair "{" nil :post-handlers '(:add ("||\n[i]" "RET")))
+  ;;      )
+  ;;   )
 
   ;; -- nyanyanyan
   (setq nyan-animate-nyancat nil) ;; don't animate nyancat progress bar
@@ -473,31 +473,31 @@ before packages are loaded. If you are unsure, you should try in setting them in
                    "%b"))))
 
   ;; -- configure modeline
-  (spacemacs/toggle-mode-line-minor-modes-off) ;; don't show minor mode info
+  ;; (spacemacs/toggle-mode-line-minor-modes-off) ;; don't show minor mode info
   ;; (spaceline/toggle-input-method-off) ;; don't change color depending on vim insert mode
   ;; (spaceline/toggle-buffer-encoding-abbrev-off) ;; don't display file encoding
 
-  (spacemacs/toggle-aggressive-indent-globally-on)
-  (global-highlight-parentheses-mode 1)
-  (rainbow-delimiters-mode-enable)
+  ;; (spacemacs/toggle-aggressive-indent-globally-on)
+  ;; (global-highlight-parentheses-mode 1)
+  ;; (rainbow-delimiters-mode-enable)
   ;; (fringe-mode '(0 . 8)) ;; thicker window borders
 
   ;; -- ignore boring files
   ;; FIXME this doesn't work
-  (add-hook 'after-init-hook
-            (lambda ()
-              (add-to-list recentf-exclude '("^/var/folders\\.*"
-                                             "COMMIT_EDITMSG\\'"
-                                             ".*-autoloads\\.el\\'"
-                                             "[/\\]\\.elpa/"
-                                             "^.*TAGS$"
-                                             "^.*GPATH$"
-                                             (expand-file-name "~/.emacs.d/.cache")
-                                             ))
+  ;; (add-hook 'after-init-hook
+  ;;           (lambda ()
+  ;;             (add-to-list recentf-exclude '("^/var/folders\\.*"
+  ;;                                            "COMMIT_EDITMSG\\'"
+  ;;                                            ".*-autoloads\\.el\\'"
+  ;;                                            "[/\\]\\.elpa/"
+  ;;                                            "^.*TAGS$"
+  ;;                                            "^.*GPATH$"
+  ;;                                            (expand-file-name "~/.emacs.d/.cache")
+  ;;                                            ))
 
-              ;; (add-to-list 'recentf-exclude "^.*TAGS$")
+  ;;             ;; (add-to-list 'recentf-exclude "^.*TAGS$")
 
-              t))
+  ;;             t))
 
   ;; ;; -- configure projectile
   ;; ;; use ripgrep
@@ -573,28 +573,6 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
   )
 
-;; Do not write anything past this comment. This is where Emacs will
-;; auto-generate custom variable definitions.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
- '(custom-safe-themes
-   (quote
-    ("54e08527b4f4b127ebf7359acbbbecfab55152da01716c4809682eb71937fd33" default)))
- '(evil-want-Y-yank-to-eol nil)
- '(package-selected-packages
-   (quote
-    (gruvbox-theme autothemer ws-butler winum which-key wgrep volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline smex restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint ivy-hydra indent-guide hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation helm-make helm helm-core google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump popup f dash s diminish define-word counsel-projectile projectile pkg-info epl counsel swiper ivy column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed async aggressive-indent adaptive-wrap ace-window ace-link avy))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 (defun dotspacemacs/emacs-custom-settings ()
   "Emacs custom settings.
 This is an auto-generated function, do not modify its content directly, use

@@ -31,7 +31,6 @@
   '(
     gruvbox-theme
     twilight-bright-theme
-    imenu-list ;; show function drawer (like vim tagbar) with <SPC b i>
     ))
 
 (defun turnspike/init-twilight-bright-theme())
@@ -44,14 +43,13 @@
 ;;   (spacemacs/load-theme 'gruvbox)
 ;;   (load-theme 'gruvbox-dark-medium))
 
-(defun turnspike/init-imenu-list())
-(defun turnspike/post-init-imenu-list()
+;; (defun turnspike/post-init-imenu-list()
 
-  (setq
-   imenu-list-mode-line-format nil
-   imenu-list-focus-after-activation nil
-   )
+;;   (setq
+;;    imenu-list-mode-line-format nil
+;;    imenu-list-focus-after-activation nil
+;;    )
 
-)
+;; )
 
 ;;; packages.el ends here
