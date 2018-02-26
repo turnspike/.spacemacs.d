@@ -1,2 +1,0 @@
-# Turnspike Spacemacs Layer
-
