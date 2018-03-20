@@ -1,0 +1,10 @@
+* Blogs                                                              :elfeed:
+** entry-title: \(spacemacs\|emacs\|vim\|clojure\|ruby\)              :linux:
+** http://git-annex.branchable.com/design/assistant/blog/index.rss :mustread:
+** http://feeds.feedburner.com/InformationIsBeautiful
+** Emacs                                                              :emacs:
+*** http://spacemacs.brianthicks.com/index.xml  
+*** http://www.terminally-incoherent.com/blog/feed
+*** http://nullprogram.com/feed
+*** entry-title: \(emacs\|org-mode\)
+*** http://planet.emacsen.org/atom.xml

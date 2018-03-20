@@ -1,4 +1,3 @@
-;; -*- mode: emacs-lisp -*-
 ;; This file is loaded by Spacemacs at startup.
 ;; It must be stored in your home directory.
 
@@ -30,19 +29,21 @@ values."
    dotspacemacs-configuration-layer-path '("~/.spacemacs.d/layers/")
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(javascript
+     html
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press <SPC f e R> (Vim style) or
      ;; <M-m f e R> (Emacs style) to install them.
      ;; ----------------------------------------------------------------
      (auto-completion :variables ;; TODO get autocompletion working nicely
-                      auto-completion-return-key-behavior nil
+                      auto-completion-return-key-behavior 'complete
                       auto-completion-tab-key-behavior 'cycle
-                      auto-completion-complete-with-key-sequence "fd"
+                      ;; auto-completion-complete-with-key-sequence "fd"
                       auto-completion-complete-with-key-sequence-delay 0.1
-                      auto-completion-enable-snippets-in-popup t
-                      auto-completion-enable-help-tooltip nil
+                      ;; auto-completion-enable-snippets-in-popup f
+                      ;; auto-completion-private-snippets-directory nil
+                      ;; auto-completion-enable-help-tooltip nil
                       auto-completion-enable-sort-by-usage nil)
      better-defaults
      clojure
@@ -50,6 +51,9 @@ values."
              colors-colorize-identifiers 'variables
              colors-enable-nyan-cat-progress-bar t
              ) ;; show color codes as actual colors
+     deft
+     (elfeed :variables rmh-elfeed-org-files (list "~/.spacemacs.d/layers/turnspike/elfeed.org"))
+     html
      ivy
      ;; auto-completion
      emacs-lisp
@@ -57,6 +61,7 @@ values."
      imenu-list
      markdown
      org
+     react
      (ruby :variables
            ruby-enable-ruby-on-rails-support t
            ruby-enable-enh-ruby-mode t
@@ -65,10 +70,12 @@ values."
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
+     shell-scripts
      spell-checking
      syntax-checking
      turnspike
      (treemacs :variables treemacs-use-follow-mode t)
+     twitter
      version-control
      yaml
      )
@@ -149,6 +156,8 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(spacemacs-light
+                         doom-one
+                         doom-one-light
                          spacemacs-dark)
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -316,6 +325,20 @@ values."
    dotspacemacs-whitespace-cleanup "changed"
    ))
 
+(defun my-setup-indent (n)
+  ;; java/c/c++
+  (setq c-basic-offset n)
+  ;; web development
+  (setq coffee-tab-width n) ; coffeescript
+  (setq javascript-indent-level n) ; javascript-mode
+  (setq js-indent-level n) ; js-mode
+  (setq js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+  (setq web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+  (setq web-mode-css-indent-offset n) ; web-mode, css in html file
+  (setq web-mode-code-indent-offset n) ; web-mode, js code in html file
+  (setq css-indent-offset n) ; css-mode
+  )
+
 (defun dotspacemacs/user-init ()
   "Initialization function for user code.
 It is called immediately after `dotspacemacs/init', before layer configuration
@@ -323,12 +346,28 @@ executes.
  This function is mostly useful for variables that need to be set
 before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
+
+  (my-setup-indent 2) ; indent 2 spaces width
+
   (setq exec-path-from-shell-check-startup-files nil) ;; don't warn about .bashrc env vars
+  (when (and (display-graphic-p) (eq system-type 'darwin))
+    (with-eval-after-load 'exec-path-from-shell
+      (exec-path-from-shell-setenv "SHELL" "/bin/bash"))) ;; always use bash as shell
+
+  ;; (when (system-type "darwin")
+  ;;   (setq dired-use-ls-dired nil))
+
+  (when (eq system-type 'darwin)
+    (require 'ls-lisp)
+    (setq ls-lisp-use-insert-directory-program nil))
+
   (setq custom-file "~/.spacemacs.d/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
   ;; (spacemacs/set-leader-keys "oc" 'org-capture)
 
   (setq-default evil-escape-key-sequence "jk") ;; never gonna give you up
   (setq-default evil-cross-lines t) ;; enable horizontal movement wrapping
+  ;; does it bother you that the cursor creeps back when you go back to normal mode?
+  (setq evil-move-cursor-back nil)
 
   (with-eval-after-load 'evil-maps
 
@@ -338,6 +377,11 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
     (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
     (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+
+    ;; TODO I think the manual is wrong about the above...
+    ;; http://spacemacs.org/doc/VIMUSERS.html
+    ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
+    ;; https://github.com/syl20bnr/spacemacs/wiki/Beginner's-Guide-to-Contributing-a-Pull-Request-to-Spacemacs
 
     (define-key evil-motion-state-map (kbd "M-h") #'evil-window-left)
     (define-key evil-motion-state-map (kbd "M-j") #'evil-window-down)
@@ -349,10 +393,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (define-key evil-motion-state-map (kbd "C-<up>") #'evil-window-up)
     (define-key evil-motion-state-map (kbd "C-<right>") #'evil-window-right)
 
-    ;; TODO I think the manual is wrong about the above...
-    ;; http://spacemacs.org/doc/VIMUSERS.html
-    ;; because: https://emacs.stackexchange.com/questions/14485/making-dj-delete-two-lines-in-evil-mode
-    ;; https://github.com/syl20bnr/spacemacs/wiki/Beginner's-Guide-to-Contributing-a-Pull-Request-to-Spacemacs
+    (define-key evil-motion-state-map (kbd "C-e") #'evil-end-of-line)
+    (define-key evil-motion-state-map (kbd "C-a") #'evil-beginning-of-line)
 
     ;; -- fix copy/paste from other apps
     ;; https://emacs.stackexchange.com/questions/14940/emacs-doesnt-paste-in-evils-visual-mode-with-every-os-clipboard/15054#15054
@@ -384,7 +426,9 @@ before packages are loaded. If you are unsure, you should try in setting them in
 
   ;;   )
 
-  ;; (define-key evil-normal-state-map "gv" 'evil-select-pasted)
+  ;; (define-key evil-normal-state-map "gp" 'evil-select-pasted)
+  (global-set-key (kbd "M-<down>") 'scroll-down-command)
+  (global-set-key (kbd "M-<up>") 'scroll-up-command)
 
   ;; -- indenting
   (setq standard-indent 2)
@@ -426,6 +470,22 @@ before packages are loaded. If you are unsure, you should try in setting them in
                                            ;; (set-face-attribute hl-line-face nil :underline nil)
                                            (set-face-background 'hl-line "#D9D8D2")
                                            ))
+
+  (setq org-agenda-files '("~/gdrive/org/todo.org"
+                           "~/gdrive/org/tickler.org"))
+
+  ;; (setq org-capture-templates '(("t" "Todo [inbox]" entry
+  ;;                                (file+headline "~/gdrive/gtd/inbox.org" "Tasks")
+  ;;                                "* TODO %i%?")
+  ;;                               ("T" "Tickler" entry
+  ;;                                (file+headline "~/gdrive/gtd/tickler.org" "Tickler")
+  ;;                                "* %i%? \n %U")))
+
+  ;; (setq org-refile-targets '(("~/gdrive/gtd/gtd.org" :maxlevel . 3)
+  ;;                            ("~/gdrive/gtd/someday.org" :level . 1)
+  ;;                            ("~/gdrive/gtd/tickler.org" :maxlevel . 2)))
+
+  (setq org-todo-keywords '((sequence "TODO(t)" "DOING(d)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
   ;; -- escape always escapes
   ;;  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
