@@ -430,10 +430,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (global-set-key (kbd "M-<down>") 'scroll-down-command)
   (global-set-key (kbd "M-<up>") 'scroll-up-command)
 
-  ;; -- indenting
-  (setq standard-indent 2)
-  (setq c-basic-offset 2)
-  (setq tab-width 2)
+  ;; ;; -- indenting
+  ;; (setq standard-indent 2)
+  ;; (setq c-basic-offset 2)
+  ;; (setq tab-width 2)
 
   ;; (setq spacemacs-centered-buffer-mode-max-content-width 1600)
   ;; -- configure programming modes
@@ -459,7 +459,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (set-face-background 'hl-line "#D9D8D2")
   (set-face-attribute 'region nil :background "#FAC023")
   ;; (setq evil-visual-state-cursor '("#cb4b16" box))     ; orange
-
+  (setq dotspacemacs-auto-resume-layouts t)
   (add-hook 'evil-insert-state-entry-hook (lambda()
                                             ;;(set-face-attribute hl-line-face nil :underline t)
                                             (set-face-background 'hl-line "#C5EFD8")
