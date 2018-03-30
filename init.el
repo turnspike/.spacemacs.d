@@ -362,7 +362,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
     (setq ls-lisp-use-insert-directory-program nil))
 
   (setq custom-file "~/.spacemacs.d/custom.el") ;; store custom vars here to avoid cluttering up .spacemacs file
-  ;; (spacemacs/set-leader-keys "oc" 'org-capture)
+
+  ;; (server-start)
 
   (setq-default evil-escape-key-sequence "jk") ;; never gonna give you up
   (setq-default evil-cross-lines t) ;; enable horizontal movement wrapping
@@ -430,10 +431,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
   (global-set-key (kbd "M-<down>") 'scroll-down-command)
   (global-set-key (kbd "M-<up>") 'scroll-up-command)
 
-  ;; -- indenting
-  (setq standard-indent 2)
-  (setq c-basic-offset 2)
-  (setq tab-width 2)
+  ;; ;; -- indenting
+  ;; (setq standard-indent 2)
+  ;; (setq c-basic-offset 2)
+  ;; (setq tab-width 2)
 
   ;; (setq spacemacs-centered-buffer-mode-max-content-width 1600)
   ;; -- configure programming modes
@@ -459,7 +460,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (set-face-background 'hl-line "#D9D8D2")
   (set-face-attribute 'region nil :background "#FAC023")
   ;; (setq evil-visual-state-cursor '("#cb4b16" box))     ; orange
-
+  (setq dotspacemacs-auto-resume-layouts t)
   (add-hook 'evil-insert-state-entry-hook (lambda()
                                             ;;(set-face-attribute hl-line-face nil :underline t)
                                             (set-face-background 'hl-line "#C5EFD8")
@@ -471,21 +472,52 @@ before packages are loaded. If you are unsure, you should try in setting them in
                                            (set-face-background 'hl-line "#D9D8D2")
                                            ))
 
-  (setq org-agenda-files '("~/gdrive/org/todo.org"
-                           "~/gdrive/org/tickler.org"))
+  (with-eval-after-load 'org
 
-  ;; (setq org-capture-templates '(("t" "Todo [inbox]" entry
-  ;;                                (file+headline "~/gdrive/gtd/inbox.org" "Tasks")
-  ;;                                "* TODO %i%?")
-  ;;                               ("T" "Tickler" entry
-  ;;                                (file+headline "~/gdrive/gtd/tickler.org" "Tickler")
-  ;;                                "* %i%? \n %U")))
+    (setq org-agenda-files '("~/gdrive/org/inbox.org"
+                             "~/gdrive/org/work.org"
+                             "~/gdrive/org/personal.org"
+                             "~/gdrive/org/tickler.org"))
 
-  ;; (setq org-refile-targets '(("~/gdrive/gtd/gtd.org" :maxlevel . 3)
-  ;;                            ("~/gdrive/gtd/someday.org" :level . 1)
-  ;;                            ("~/gdrive/gtd/tickler.org" :maxlevel . 2)))
+    (setq org-refile-targets '(("~/gdrive/org/work.org" :maxlevel . 3)
+                               ("~/gdrive/org/work-backlog.org" :level . 1)
+                               ("~/gdrive/org/personal.org" :level . 3)
+                               ("~/gdrive/org/personal-backlog.org" :level . 1)
+                               ("~/gdrive/org/tickler.org" :maxlevel . 2)))
 
-  (setq org-todo-keywords '((sequence "TODO(t)" "DOING(d)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+    (setq org-capture-templates '(("t" "Todo [inbox]" entry
+                                   (file+headline "~/gdrive/org/inbox.org" "Inbox")
+                                   "* TODO %i%?")
+                                  ("T" "Tickler" entry
+                                   (file+headline "~/gdrive/org/tickler.org" "Tickler")
+                                   "* %i%? \n %U")))
+
+    (spacemacs/set-leader-keys "oc" 'org-capture)
+    (setq org-tag-alist '(("@project" . ?p) ("@urgent" . ?u) ("@coding" . ?c) ("@dship" . ?d) ("@beats" . ?b)))
+    (setq org-todo-keywords '((sequence "BACKLOG(b)" "TODO(t)" "DOING(i)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+
+    (setq org-agenda-custom-commands
+          '(("p" "Projects" tags-todo "@projects"
+             ((org-agenda-overriding-header "Projects")
+              (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first)))))
+
+    (defun my-org-agenda-skip-all-siblings-but-first ()
+      "Skip all but the first non-done entry."
+      (let (should-skip-entry)
+        (unless (org-current-is-todo)
+          (setq should-skip-entry t))
+        (save-excursion
+          (while (and (not should-skip-entry) (org-goto-sibling t))
+            (when (org-current-is-todo)
+              (setq should-skip-entry t))))
+        (when should-skip-entry
+          (or (outline-next-heading)
+              (goto-char (point-max))))))
+
+    (defun org-current-is-todo ()
+      (string= "TODO" (org-get-todo-state)))
+
+    )
 
   ;; -- escape always escapes
   ;;  (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
