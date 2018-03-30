@@ -532,6 +532,10 @@ before packages are loaded. If you are unsure, you should try in setting them in
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
 
+  ;; -- enable html-tidy mode for html files
+  (eval-after-load 'flycheck
+    '(flycheck-add-mode 'html-tidy 'web-mode))
+
   ;; -- configure modeline
   ;; (spacemacs/toggle-mode-line-minor-modes-off) ;; don't show minor mode info
   ;; (spaceline/toggle-input-method-off) ;; don't change color depending on vim insert mode
