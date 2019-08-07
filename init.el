@@ -32,7 +32,7 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layer-path '("~/.spacemacs.d/layers/")
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(javascript
      ;; ----------------------------------------------------------------
      ;; Example of useful layers you may want to use right away.
      ;; Uncomment some layer names and press `SPC f e R' (Vim style) or
@@ -99,8 +99,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-frozen-packages '()
 
    ;; A list of packages that will not be installed and loaded.
-   ;; dotspacemacs-excluded-packages '(vi-tilde-fringe)
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(vi-tilde-fringe)
+   ;; dotspacemacs-excluded-packages '()
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -514,14 +514,16 @@ before packages are loaded. If you are unsure, you should try in setting them in
   ;; (simpleclip-mode 1)
 
   (setq exec-path-from-shell-check-startup-files nil) ;; don't warn about .bashrc env vars
+
+
+  ;; -- macos tweaks
+
   (when (and (display-graphic-p) (eq system-type 'darwin))
     (with-eval-after-load 'exec-path-from-shell
       (exec-path-from-shell-setenv "SHELL" "/bin/bash"))) ;; always use bash as shell
 
-  ;; (when (system-type "darwin")
-  ;;   (setq dired-use-ls-dired nil))
-
   (when (eq system-type 'Darwin)
+    (setq dired-use-ls-dired nil)
     (require 'ls-lisp)
     (setq ls-lisp-use-insert-directory-program nil))
 
@@ -727,6 +729,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
         '((:eval (if (buffer-file-name)
                      (abbreviate-file-name (buffer-file-name))
                    "%b"))))
+
+  (setq flycheck-ruby-rubocop-executable "~/.rbenv/shims/rubocop")
 
   ;; -- enable html-tidy mode for html files
   (eval-after-load 'flycheck
