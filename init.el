@@ -48,13 +48,17 @@ This function should only modify configuration layer settings."
                       ;; auto-completion-enable-help-tooltip nil
                       auto-completion-enable-sort-by-usage nil)
      better-defaults
-     clojure
+     ;; clojure
+     (clojure :variables
+              clojure-enable-linters 'clj-kondo)
      (colors :variables
              colors-colorize-identifiers 'variables
              colors-enable-nyan-cat-progress-bar t
              ) ;; show color codes as actual colors
      deft
      (elfeed :variables rmh-elfeed-org-files (list "~/.spacemacs.d/layers/turnspike/elfeed.org"))
+     ;; flycheck
+     ;; flycheck-clj-kondo
      html
      ivy
      auto-completion
