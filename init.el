@@ -402,7 +402,7 @@ It should only modify the values of Spacemacs settings."
    ;;   :size-limit-kb 1000)
    ;; When used in a plist, `visual' takes precedence over `relative'.
    ;; (default nil)
-   dotspacemacs-line-numbers nil
+   dotspacemacs-line-numbers t
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -646,7 +646,7 @@ before packages are loaded. If you are unsure, you should try in setting them in
                              "~/gdrive/org/tickler.org"))
 
     (setq org-refile-targets '(("~/gdrive/org/work.org" :maxlevel . 3)
-                               ("~/gdrive/org/work-backlog.org" :level . 1)
+                               ;; ("~/gdrive/org/work-backlog.org" :level . 1)
                                ("~/gdrive/org/personal.org" :level . 3)
                                ("~/gdrive/org/personal-backlog.org" :level . 1)
                                ("~/gdrive/org/tickler.org" :maxlevel . 2)))
@@ -835,6 +835,8 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+  ;; (setq org-todo-keywords                                                                                        
+  ;;       '((sequence "BACKLOG(t!)" "NEXT(n!)" "DOING(d!)" "BLOCKED(b!)" "TODELEGATE(g!)" "DELEGATED(D!)" "FOLLOWUP(f!)" "TICKLE(T!)" "|" "CANCELLED(c!)" "DONE(F!)")))
   )
 
 (defun dotspacemacs/emacs-custom-settings ()
